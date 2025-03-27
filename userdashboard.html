@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .welcome {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .section {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+        .status-active {
+            color: green;
+        }
+        .status-expired {
+            color: red;
+        }
+        .button {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .profile-form input {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .notifications {
+            background-color: #fff3cd;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+      .search-box {
+        padding: 8px;
+        width: 300px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+        footer {
+            margin-top: 20px;
+            padding: 10px;
+            text-align: center;
+            background-color: #f8f9fa;
+            border-top: 1px solid #ddd;
+        }    
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="welcome">Welcome back, <strong id="username">[Username]</strong>!</div>
+ <!-- Notifications Section -->
+        <div class="notifications">
+            <strong>Notifications:</strong><span id="notification-text">loading...</span>
+        </div>
+   <!-- My Tickets Section -->
+        <div class="section">
+            <h2>My Tickets</h2>
+            <div class="search-box">         
+             <input type="text" id="search-ticket" placeholder="Search tickets...">
+               </div>
+            <table id="tickets-table">
+                <thead>
+                    <tr>
+                        <th>Raffle Ticket ID</th>
+                        <th>Event Name</th>
+                        <th>Date Purchased</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!--tickets will be dynamically added here -->
+                    </tbody>
+                    </table>
+                    </div>
+                    <!--profile section -->
+        <div class="section">
+            <h2>Profile</h2>
+            <form class="profile-form" id="profile-form">
+                <label for="username">Username:</label>
+                <input type="text" id="profile-username" name="username" value="[Username]" readonly>
+                <label for="email">Email:</label>
+                <input type="email" id="profile-email" name="email" value="[Email]" readonly>
+                <label for="phone">Phone:</label>
+                <input type="text" id="profile-phone" name="phone" placeholder="Enter your phone number">
+                <button type="submit" class="button">Update Profile</button>
+            </form>
+        </div>
+ <!-- Upcoming Events Section -->
+        <div class="section">
+            <h2>Upcoming Events</h2>
+            <ul id="upcoming-events">
+                <!--events will be dynamically inserted here -->
+            </ul>
+        </div>
+<!-- Footer -->
+        <footer>
+            <p>© 2025 Raffle Ticket System. All rights reserved.</p>
+            <p><a href="#">Terms of Service</a> | <a href="#">Privacy Policy</a></p>
+        </footer>
+    </div>
+    <script>
+        // Mock Data
+        const userData = {
+            username: "james jude",
+            email: "jamesjd@example.com",
+            phone: "+254743673655",
+        };
+        const tickets = [
+            { id: 12345, eventName: "Event 1", datePurchased: "2025-02-09", status: "Active" },
+            { id: 67890, eventName: "Event 2", datePurchased: "2025-01-15", status: "Expired"},
+        ];
+        const notifications = "You have 1 upcoming event and 2 active tickets.";
+        const upcomingEvents = [
+            "Event 3 - 2025-03-20",
+            "Event 4 - 2025-04-10",
+        ];
+        document.getElementById("username").textContent =userData.username;
+        document.getElementById("profile-username").value =userData.username;
+        document.getElementById("profile-email").value =userData.email;
+        document.getElementById("profile-phone").value =userData.phone;
+        // Load Notifications
+        document.getElementById("notification-text").textContent = notifications;
+        // Load Tickets
+        const ticketsTableBody = document.querySelector("#tickets-table tbody");
+        if (!ticketsTableBody) {
+            console.error("Error: Tickets table body not found.");
+        }
+        function loadTickets(filter = "") {
+            ticketsTableBody.innerHTML = ""; // Clear existing rows
+            tickets
+                .filter(ticket => ticket.eventName.toLowerCase().includes(filter.toLowerCase()))
+                .forEach(ticket => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${ticket.id}</td>
+                        <td>${ticket.eventName}</td>
+                        <td>${ticket.datePurchased}</td>
+                        <td class="status-${ticket.status.toLowerCase()}">${ticket.status}</td>
+                        <td><button class="button">View Details</button></td>
+                    `;
+                    ticketsTableBody.appendChild(row);
+                });
+        }
+        loadTickets(); // Initial load
+        document.getElementById("search-ticket").addEventListener("input", (e) => {
+            loadTickets(e.target.value);
+        });
+        const upcomingEventsList = document.getElementById("upcoming-events");
+        upcomingEvents.forEach(event => {
+            const li = document.createElement("li");
+            li.textContent = event;
+            upcomingEventsList.appendChild(li);
+        });
+        document.getElementById("profile-form").addEventListener("submit", (e) => {
+            e.preventDefault();
+            const newPhone = document.getElementById("profile-phone").value;
+            userData.phone = newPhone;
+            alert("Profile updated successfully!")
+        });
+   </script>
+</body>
+</html> 
